@@ -1,0 +1,67 @@
+# Defines all services required by our Live Counter application.
+services:
+
+  # PostgreSQL database service.
+  database:
+    # Use the official PostgreSQL 17 image.
+    image: postgres:17
+
+    # Give the database container a fixed name.
+    container_name: live-counter-db
+
+    # Database configuration.
+    environment:
+      POSTGRES_DB: livecounter
+      POSTGRES_USER: counteruser
+      POSTGRES_PASSWORD: counterpass
+
+    # Make PostgreSQL accessible on port 5432.
+    ports:
+      - "5432:5432"
+
+    # Keep database data even if the container is removed.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Spring Boot backend service.
+  backend:
+    # Build the backend image using its Dockerfile.
+    build: ./backend
+
+    # Give the backend container a fixed name.
+    container_name: live-counter-backend
+
+    # Backend configuration.
+    environment:
+      # Connect to PostgreSQL using its Compose service name.
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/livecounter
+      SPRING_DATASOURCE_USERNAME: counteruser
+      SPRING_DATASOURCE_PASSWORD: counterpass
+
+    # Expose the backend API on port 8080.
+    ports:
+      - "8080:8080"
+
+    # Start the backend after the database service.
+    depends_on:
+      - database
+
+  # React frontend service.
+  frontend:
+    # Build the frontend image using its Dockerfile.
+    build: ./frontend
+
+    # Give the frontend container a fixed name.
+    container_name: live-counter-frontend
+
+    # Expose the React application on port 5173.
+    ports:
+      - "5173:5173"
+
+    # Start the frontend after the backend service.
+    depends_on:
+      - backend
+
+# Define persistent storage for PostgreSQL.
+volumes:
+  postgres_data:

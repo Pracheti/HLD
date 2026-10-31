@@ -1,0 +1,22 @@
+# Node.js dependencies and build files
+**/node_modules/
+**/dist/
+
+# Java build files
+**/target/
+
+# IDE files
+.idea/
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Database backups
+*.dump
